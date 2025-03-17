@@ -232,7 +232,7 @@ def make_env(config, index, **overrides):
       'bsuite': 'embodied.envs.bsuite:BSuite',
       'memmaze': lambda task, **kw: from_gym.FromGym(
           f'MemoryMaze-{task}-v0', **kw),
-      
+      "leorover": "embodied.envs.leo_vision_wrapper:LeoRover",
   }[suite]
   if isinstance(ctor, str):
     module, cls = ctor.split(':')

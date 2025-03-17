@@ -1,0 +1,47 @@
+"""
+Integration module to connect the LeoRoverEnv with DreamerV3 agent
+-----------------------------------------------------------------
+This module provides the necessary wrapper to make the Leo Rover environment
+compatible with DreamerV3's expectation of observation format.
+
+"""
+
+from leo_rover_env import LeoRoverEnv
+import gym
+import numpy as np
+
+
+class VisionWrapper(gym.ObservationWrapper):
+    """Wraps a visual environment to make observations compatible with Dreamer."""
+    
+    def __init__(self, env):
+        super().__init__(env)
+        # Update the observation space definition
+        self.observation_space = gym.spaces.Dict({
+            'image': self.env.observation_space['image'],
+            'reward': gym.spaces.Box(-np.inf, np.inf, (), np.float32),
+            'is_first': gym.spaces.Box(0, 1, (), bool),
+            'is_last': gym.spaces.Box(0, 1, (), bool),
+            'is_terminal': gym.spaces.Box(0, 1, (), bool),
+        })
+
+    def observation(self, obs):
+        """Transforms the observation to be compatible with DreamerV3."""
+        # DreamerV3 expects observations with specific keys
+        return {
+            'image': obs['image'],  # Keep the image as-is
+            'reward': np.float32(0.0),  # Will be filled in by the Dreamer environment
+            'is_first': False,  # Will be handled by the Dreamer environment
+            'is_last': False,  # Will be handled by the Dreamer environment
+            'is_terminal': False,  # Will be handled by the Dreamer environment
+        }
+
+
+def LeoRover(**kwargs):
+    """Factory function that creates and wraps a LeoRoverEnv for DreamerV3."""
+    env = LeoRoverEnv(**kwargs)
+    return VisionWrapper(env)
+
+
+# You'll need to add this entry to the ctor dictionary in main.py:
+# "leorover": "embodied.envs.leo_dreamer_integration:LeoRover"

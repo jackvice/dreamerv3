@@ -35,7 +35,8 @@ defaults:
     minecraft: {size: [64, 64], break_speed: 100.0, logs: False, length: 36000}
     dmc: {size: [64, 64], repeat: 1, proprio: True, image: True, camera: -1}
     loconav: {size: [64, 64], repeat: 1, camera: -1}
-
+    leoros: {}  # Add an empty dictionary to ensure merging works
+    leorover: {size: [96, 96]}
   replay:
     size: 5e6
     online: True
@@ -152,6 +153,17 @@ size400m: &size400m
   .*\.depth: 96
   .*\.units: 1536
 
+
+leorover:
+  task: leorover_navigation
+  run: {steps: 1.1e6, train_ratio: 256, envs: 8}
+  
+leoros:
+  task: leoros_nav
+  run: {steps: 1.1e6, envs: 1, train_ratio: 512}
+  env:
+    leoros: {robot_ns: 'leo1'}
+  
 minecraft:
   task: minecraft_diamond
 
